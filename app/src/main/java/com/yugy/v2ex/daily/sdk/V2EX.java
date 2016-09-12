@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
@@ -265,9 +264,12 @@ public class V2EX {
         client.addHeader("Content-Type", "application/x-www-form-urlencoded");
         RequestParams params = new RequestParams();
         params.put("next", "/");
-        params.put("u", username);
         params.put("once", String.valueOf(onceCode));
-        params.put("p", password);
+        //params.put("u", username);
+        //params.put("p", password);
+
+        params.put("b5a918ba418f1ae7d971a4180c9a69c176b1f9e1967b3b512050c843cceb8ba6", username);
+        params.put("640dcd21c74b3d062ea26993e83a91ac436d5648f911c32ab07b9f52a94b31bd", password);
         client.post("https://www.v2ex.com/signin", params, new TextHttpResponseHandler() {
 
             @Override
@@ -289,7 +291,7 @@ public class V2EX {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseBody) {
-//                DebugUtils.log(responseBody);
+                DebugUtils.log(responseBody);
                 JSONObject result = new JSONObject();
                 try {
                     result.put("result", "fail");
