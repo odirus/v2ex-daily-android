@@ -45,6 +45,7 @@ public class SettingFragment extends PreferenceFragment implements OnPreferenceC
 
     public static final String PREF_LOGIN = "pref_login";
     public static final String PREF_CONTACT = "pref_contact";
+    public static final String PREF_MAINTAINER = "pref_maintainer";
     public static final String PREF_UPDATE = "pref_check_update";
     public static final String PREF_SYNC = "pref_sync";
 
@@ -74,6 +75,7 @@ public class SettingFragment extends PreferenceFragment implements OnPreferenceC
 
         findPreference(PREF_LOGIN).setOnPreferenceClickListener(this);
         findPreference(PREF_CONTACT).setOnPreferenceClickListener(this);
+        findPreference(PREF_MAINTAINER).setOnPreferenceClickListener(this);
         findPreference(PREF_UPDATE).setOnPreferenceClickListener(this);
         findPreference(PREF_SYNC).setOnPreferenceClickListener(this);
     }
@@ -86,9 +88,13 @@ public class SettingFragment extends PreferenceFragment implements OnPreferenceC
 
     @Override
     public boolean onPreferenceClick(final Preference preference) {
-        if(preference.getKey().equals(PREF_CONTACT)){
+        if(preference.getKey().equals(PREF_CONTACT) || preference.getKey().equals(PREF_MAINTAINER)){
+            String emailContact = preference.getKey().equals(PREF_CONTACT) ?
+                    "mailto:me@yanghui.name" :
+                    "mailto:odirus@hotmail.com";
+
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(Uri.parse("mailto:me@yanghui.name"));
+            intent.setData(Uri.parse(emailContact));
             if(intent.resolveActivity(getActivity().getPackageManager()) != null)
                 startActivity(intent);
             else{

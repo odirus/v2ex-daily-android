@@ -66,6 +66,9 @@ public class NotificationFragment extends Fragment implements OnRefreshListener,
                 .setup(mPullToRefreshLayout);
 
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        DebugUtils.log(sharedPreferences.getAll());
+
         if(sharedPreferences.contains("username")){
             if(sharedPreferences.contains("token")){
                 mToken = sharedPreferences.getString("token", null);
@@ -75,7 +78,6 @@ public class NotificationFragment extends Fragment implements OnRefreshListener,
                 V2EX.getNotificationToken(getActivity(), new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    DebugUtils.log(response);
                     if (getActivity() != null) {
                         try {
                             if (response.getString("result").equals("ok")) {

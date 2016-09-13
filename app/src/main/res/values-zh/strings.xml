@@ -24,7 +24,9 @@
     <string name="title_more">更多</string>
     <string name="title_about">关于每日V2EX</string>
     <string name="title_contact">联系作者</string>
-    <string name="title_contact_summary">我正在求一份工作...</string>
+    <string name="title_contact_summary">YangHui on Github</string>
+    <string name="title_maintainer">项目维护者</string>
+    <string name="title_maintainer_summary">odirus on Github</string>
     <string name="title_update">检查更新</string>
     <string name="title_notification">通知服务</string>
     <string name="title_notification_action">通知</string>

@@ -220,7 +220,7 @@ public class V2EX {
 
     public static void getOnceCode(Context context, String url, final JsonHttpResponseHandler responseHandler){
         AsyncHttpClient client = getClient(context);
-        client.get(url, new TextHttpResponseHandler(){
+        client.get(url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 responseHandler.onFailure(statusCode, headers, responseString, throwable);
@@ -290,9 +290,9 @@ public class V2EX {
                 DebugUtils.log(statusCode);
                 JSONObject result = new JSONObject();
                 try {
-                    if(statusCode == 302){
+                    if (statusCode == 302) {
                         result.put("result", "ok");
-                    }else{
+                    } else {
                         result.put("result", "fail");
                     }
                     DebugUtils.log(result);
@@ -311,9 +311,9 @@ public class V2EX {
                     Pattern errorPattern = Pattern.compile("<div class=\"problem\">(.*)</div>");
                     Matcher errorMatcher = errorPattern.matcher(responseBody);
                     final String errorContent;
-                    if(errorMatcher.find()){
+                    if (errorMatcher.find()) {
                         errorContent = errorMatcher.group(1).replaceAll("<[^>]+>", "");
-                    }else{
+                    } else {
                         errorContent = "Unknown error";
                     }
                     result.put("content", new JSONObject() {{
@@ -402,12 +402,12 @@ public class V2EX {
                     Pattern errorPattern = Pattern.compile("<div class=\"problem\">(.*)</div>");
                     Matcher errorMatcher = errorPattern.matcher(new String(responseBody));
                     final String errorContent;
-                    if(errorMatcher.find()){
+                    if (errorMatcher.find()) {
                         errorContent = errorMatcher.group(1).replaceAll("<[^>]+>", "");
-                    }else{
+                    } else {
                         errorContent = "Unknown error";
                     }
-                    result.put("content", new JSONObject(){{
+                    result.put("content", new JSONObject() {{
                         put("error_msg", errorContent);
                     }});
                     responseHandler.onSuccess(statusCode, headers, result);
@@ -421,10 +421,10 @@ public class V2EX {
                 DebugUtils.log(statusCode);
                 JSONObject result = new JSONObject();
                 try {
-                    if(statusCode == 302){
+                    if (statusCode == 302) {
                         result.put("result", "ok");
                         result.put("content", commentContent);
-                    }else{
+                    } else {
                         result.put("result", "fail");
                     }
                     DebugUtils.log(result);
@@ -478,15 +478,15 @@ public class V2EX {
         }else{
             url = "https://www.v2ex.com/unfavorite/node/" + nodeId + "?t=" + regTime;
         }
-        getClient(context).get(url, new TextHttpResponseHandler(){
+        getClient(context).get(url, new TextHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 JSONObject result = new JSONObject();
                 try {
-                    if(statusCode == 302){
+                    if (statusCode == 302) {
                         result.put("result", "ok");
-                    }else{
+                    } else {
                         result.put("result", "fail");
                     }
                     responseHandler.onSuccess(statusCode, headers, result);
@@ -526,16 +526,22 @@ public class V2EX {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseBody) {
-                Pattern tokenPattern = Pattern.compile("<input type=\"text\" value=\"https://www\\.v2ex\\.com/n/([^\\.]+)\\.xml\" class=\"sll\" onclick=\"this\\.select\\(\\);\" readonly=\"readonly\" />");
-                Matcher tokenMatcher = tokenPattern.matcher(responseBody);
+                Document doc = Jsoup.parse(responseBody);
+
+                Elements elements = doc.select("div#Main div.box");
+                String notificationsFeed = elements.last().select("div.cell input[type=text]").attr("value");
+                Pattern tokenPattern = Pattern.compile("v2ex\\.com/n/([^\\.]+)\\.xml");
+                Matcher tokenMatcher = tokenPattern.matcher(notificationsFeed);
+
                 try {
                     JSONObject result = new JSONObject();
-                    if(tokenMatcher.find()){
+                    if (tokenMatcher.find()) {
                         result.put("result", "ok");
                         result.put("token", tokenMatcher.group(1));
-                    }else{
+                    } else {
                         result.put("result", "fail");
                     }
+                    DebugUtils.log(result);
                     responseHandler.onSuccess(statusCode, headers, result);
                 }catch (JSONException e){
                     e.printStackTrace();

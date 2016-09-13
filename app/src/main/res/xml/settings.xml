@@ -26,13 +26,19 @@
 
         <Preference
             android:title="@string/title_about"
-            android:summary="V2EX Daily 是一个V2EX的第三方客户端，调用了V2EX的api接口，集成了主题浏览，节点收藏/浏览，用户浏览等功能"
+            android:summary="V2EX Daily 是 V2EX 的第三方客户端"
             />
 
         <Preference
             android:key="pref_contact"
             android:title="@string/title_contact"
             android:summary="@string/title_contact_summary"
+            />
+
+        <Preference
+            android:key="pref_maintainer"
+            android:title="@string/title_maintainer"
+            android:summary="@string/title_maintainer_summary"
             />
 
         <Preference
