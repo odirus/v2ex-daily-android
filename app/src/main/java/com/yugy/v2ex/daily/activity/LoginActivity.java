@@ -77,9 +77,11 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
                 if(LoginActivity.this != null){
                     try {
                         if(response.getString("result").equals("ok")){
+                            String usernameField = response.getJSONObject("content").getString("usernameField");
+                            String passwordField = response.getJSONObject("content").getString("passwordField");
                             int onceCode = response.getJSONObject("content").getInt("once");
                             mProgressDialog.setMessage("Login...");
-                            login(onceCode);
+                            login(usernameField, passwordField, onceCode);
                         }else{
                             MessageUtils.toast(LoginActivity.this, "get once code fail");
                         }
@@ -92,8 +94,14 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
         });
     }
 
-    private void login(int onceCode){
-        V2EX.login(LoginActivity.this, mUsername.getText().toString(), mPassword.getText().toString(), onceCode, new JsonHttpResponseHandler(){
+    private void login(String usernameField, String passwordField, int onceCode){
+        V2EX.login(LoginActivity.this,
+                usernameField,
+                mUsername.getText().toString(),
+                passwordField,
+                mPassword.getText().toString(),
+                onceCode,
+                new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if(LoginActivity.this != null){

@@ -15,6 +15,9 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -163,6 +166,8 @@ public class V2EX {
      * {
      *      result:ok/fail,
      *      content:{
+     *          usernameField: "",
+     *          passwordField: "",
      *          once: 12345,
      *          cookie_referer: asdce
      *      }
@@ -223,24 +228,29 @@ public class V2EX {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseBody) {
-//                DebugUtils.log(responseBody);
+                Document doc = Jsoup.parse(responseBody);
+                Elements elements = doc.select("div.cell form");
+
+                String usernameField = elements.select("input[type=text]").first().attr("name");
+                String passwordField = elements.select("input[type=password]").first().attr("name");
+                String onceCode = elements.select("input[type=hidden][name=once]").attr("value");
+
                 JSONObject result = new JSONObject();
-                Pattern pattern = Pattern.compile("<input type=\"hidden\" value=\"([0-9]+)\" name=\"once\" />");
-                final Matcher matcher = pattern.matcher(responseBody);
                 try {
-                    if(matcher.find()){
-                        result.put("result", "ok");
-
-                        JSONObject jsonContent = new JSONObject();
-                        jsonContent.put("once", Integer.parseInt(matcher.group(1)));
-
-                        result.put("content", jsonContent);
-                    }else{
+                    if (usernameField.isEmpty() || passwordField.isEmpty() || onceCode.isEmpty()) {
                         result.put("result", "fail");
+                    } else {
+                        result.put("result", "ok");
+                        JSONObject jsonContent = new JSONObject();
+                        jsonContent.put("usernameField", usernameField);
+                        jsonContent.put("passwordField", passwordField);
+                        jsonContent.put("once", Integer.parseInt(onceCode));
+                        result.put("content", jsonContent);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException je) {
+                    je.printStackTrace();
                 }
+
                 DebugUtils.log(result);
                 responseHandler.onSuccess(statusCode, headers, result);
             }
@@ -257,7 +267,13 @@ public class V2EX {
      *      }
      * }
      */
-    public static void login(final Context context, String username, String password, int onceCode, final JsonHttpResponseHandler responseHandler){
+    public static void login(final Context context,
+                             String usernameField,
+                             String username,
+                             String passwordField,
+                             String password,
+                             int onceCode,
+                             final JsonHttpResponseHandler responseHandler){
         AsyncHttpClient client = getClient(context);
         client.addHeader("Origin", "https://www.v2ex.com");
         client.addHeader("Referer", "https://www.v2ex.com/signin");
@@ -265,11 +281,8 @@ public class V2EX {
         RequestParams params = new RequestParams();
         params.put("next", "/");
         params.put("once", String.valueOf(onceCode));
-        //params.put("u", username);
-        //params.put("p", password);
-
-        params.put("b5a918ba418f1ae7d971a4180c9a69c176b1f9e1967b3b512050c843cceb8ba6", username);
-        params.put("640dcd21c74b3d062ea26993e83a91ac436d5648f911c32ab07b9f52a94b31bd", password);
+        params.put(usernameField, username);
+        params.put(passwordField, password);
         client.post("https://www.v2ex.com/signin", params, new TextHttpResponseHandler() {
 
             @Override

@@ -21,5 +21,6 @@ dependencies {
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.loopj.android:android-async-http:1.4.6'
+    compile 'org.jsoup:jsoup:1.9.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
